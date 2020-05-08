@@ -1,0 +1,26 @@
+{{extend './common/layout.art'}}
+{{block 'link'}}
+    <link rel="stylesheet" href="/admin/css/style.css">
+{{/block}}
+
+{{block 'main'}} 
+    <div class="main-container">
+        <div class="img-container container-item">
+          <img src="/admin/images/404.svg">
+        </div>
+        <div class="text-container container-item">
+          <div class="code">404</div>
+          <div class="msg">{{msg}}</div>
+          <div class="action"><a href='/admin/login'>返回重新登录.</a></div>
+        </div>
+      </div>
+{{/block}}
+
+{{block 'script'}}
+    <script type="text/javascript">
+        setTimeout(() => {
+            location.href = '/admin/login'
+        }, 4000);
+    </script>
+{{/block}}
+

@@ -1,0 +1,101 @@
+{{extend './common/layout.art'}}
+
+{{block 'main'}}
+    {{include './common/header.art'}}
+    <!-- 主体内容 -->
+    <div class="content">
+        {{include './common/aside.art'}}
+        <div class="main">
+            <!-- 分类标题 -->  
+            {{if article}}
+            <div class="title">
+                <h4>{{@article._id}}</h4>
+            </div>  
+            {{/if}}
+            <!-- /分类标题 -->
+            <!-- 
+                enctype: 指定表单数据的编码类型
+                当表单涉及文件上传时，需要设置属性为multipart/form-data,将表单数据编码成二进制类型
+            -->
+            <form class="form-container" action="/admin/article-add" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>标题</label>
+                    <input type="text" name="title" class="form-control" placeholder="请输入文章标题" value="{{article && article.title}}">
+                </div>
+                <div class="form-group">
+                    <label>作者</label>
+                    <input type="text" name="author" class="form-control" readonly value="{{@userInfo._id}}">
+                </div>
+                <div class="form-group">
+                    <label>发布时间</label>
+                    <input type="date" id="publishDate" value="{{article && dateFormat(article.publishDate, 'yyyy-mm-dd')}}" name="publishDate" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                   <label for="exampleInputFile">文章封面</label>
+                   <input type="file" name="cover" id="file">
+                   <div class="thumbnail-waper">
+                       <img class="img-thumbnail" src="{{article && article.cover}}" id="preview" style="width: 98%;">
+                   </div>
+                </div>
+                <div class="form-group">
+                    <label>内容</label>
+                    <textarea name="content" class="form-control" id="editor">{{article && article.content}}</textarea>
+                </div>
+                <div class="buttons">
+                    <input type="submit" class="btn btn-primary" value="{{button}}">
+                </div>
+                <input type="hidden" name="id" value="{{@ article ? article._id : ''}}">
+                <input type="hidden" name="imgChange" id="imgChange">
+            </form>         
+        </div>
+    </div> 
+    <!-- /主体内容 -->
+{{/block}}
+
+{{block 'script'}}
+    <script src="lib/ckeditor5/ckeditor.js"></script>
+    <script type="text/javascript">
+               
+        let editor;
+
+        ClassicEditor
+                .create( document.querySelector('#editor'))
+                .then(newEditor => {
+                    editor = newEditor;
+                })
+                .catch( error => {
+                    console.error( error );
+                });
+
+        // 获取数据
+        // const editorData = editor.getData();
+        //选择文件上传控件
+        var file = document.querySelector('#file');
+        
+        var preview = document.querySelector('#preview');
+        var isCover = document.querySelector('#isCover');
+
+        //标识是否更改过图片
+
+        var flag = false;
+
+        //监听用户选择文件
+        file.onchange = function () {
+            if(preview.src) {
+                flag = true;
+                imgChange.value = flag;
+            }
+            //创建文件读取对象
+            var reader = new FileReader();   
+            // 读取文件
+            reader.readAsDataURL(this.files[0]);
+            //监听onload事件
+            reader.onload = function() {
+                //将文件读取的结果显示在页面中
+                preview.src = reader.result;
+            }
+        }
+        imgChange.value = flag;     
+    </script>
+{{/block}}
